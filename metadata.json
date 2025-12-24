@@ -1,0 +1,8 @@
+{
+  "name": "Community Share Hub",
+  "description": "An advanced peer-to-peer lending platform to reduce waste and foster community sharing with AI assistance.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
