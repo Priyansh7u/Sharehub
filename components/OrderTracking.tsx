@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../services/db';
 import { Order, TrackingStatus } from '../types';
-import { Package, MapPin, Truck, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { Package, MapPin, Truck, CheckCircle, Clock, ChevronRight, Navigation, Zap } from 'lucide-react';
 
 const OrderTracking: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(db.getOrders());
@@ -11,83 +11,107 @@ const OrderTracking: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6 space-y-12 animate-in fade-in duration-700">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-16 h-16 bg-emerald-600 text-white rounded-[24px] flex items-center justify-center shadow-2xl">
-          <Package className="w-8 h-8" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-12">
+        <div className="flex items-center gap-6">
+          <div className="w-20 h-20 bg-emerald-600 text-white rounded-[32px] flex items-center justify-center shadow-2xl relative overflow-hidden group">
+            <Package className="w-10 h-10 group-hover:scale-110 transition-transform" />
+            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          </div>
+          <div>
+            <h2 className="text-5xl font-black tracking-tighter font-heading uppercase">Your Shares</h2>
+            <p className="text-slate-500 font-bold uppercase text-xs tracking-[0.4em]">Live community logistics tracking</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-4xl font-black tracking-tighter font-heading">LIVE TRACKING</h2>
-          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em]">Monitor your active community shares</p>
+        <div className="bg-emerald-50 px-8 py-4 rounded-[32px] border border-emerald-100 flex items-center gap-4">
+           <Zap className="w-6 h-6 text-emerald-600 fill-emerald-600" />
+           <div>
+              <p className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Platform Impact</p>
+              <p className="text-lg font-black text-emerald-900">4.2 KG CO2 SAVED TODAY</p>
+           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {orders.map(order => (
-          <div key={order.id} className="bg-white rounded-[48px] p-8 shadow-xl border border-slate-50 relative overflow-hidden group">
-            <div className="flex flex-col gap-8">
+          <div key={order.id} className="bg-white rounded-[56px] p-10 shadow-2xl border border-slate-50 relative overflow-hidden group hover:shadow-emerald-500/10 transition-shadow">
+            <div className="flex flex-col gap-10">
               <div className="flex items-start justify-between">
-                <div className="flex gap-4">
-                  <div className="w-20 h-20 rounded-[24px] overflow-hidden shadow-md">
+                <div className="flex gap-6">
+                  <div className="w-24 h-24 rounded-[32px] overflow-hidden shadow-2xl border-4 border-white">
                     <img src={order.itemImage} className="w-full h-full object-cover" alt=""/>
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">{order.itemName}</h3>
-                    <p className="text-xs font-bold text-slate-400">Order #{order.id}</p>
-                    <div className="mt-2 flex items-center gap-2">
-                       <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                       <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{order.status}</span>
-                    </div>
+                    <span className="px-4 py-1.5 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">
+                      TRACKING LIVE
+                    </span>
+                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter font-heading">{order.itemName}</h3>
+                    <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Order ID: {order.id}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Arrival In</p>
-                   <p className="text-2xl font-black text-slate-900">{order.eta}</p>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ETA Arrival</p>
+                   <p className="text-3xl font-black text-emerald-600">{order.eta}</p>
                 </div>
               </div>
 
-              {/* Progress Tracker */}
-              <div className="relative pt-4 pb-8">
-                <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 rounded-full"></div>
-                <div 
-                  className="absolute top-1/2 left-0 h-1 bg-emerald-500 -translate-y-1/2 rounded-full transition-all duration-1000" 
-                  style={{ width: `${(statusSteps.indexOf(order.status) / (statusSteps.length - 1)) * 100}%` }}
-                ></div>
-                <div className="flex justify-between relative">
+              {/* Progress Tracker UI */}
+              <div className="space-y-6 pt-4">
+                <div className="flex justify-between items-center mb-2 px-2">
+                   <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Delivery Progress</p>
+                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{order.status}</p>
+                </div>
+                <div className="relative h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                  <div 
+                    className="absolute top-0 left-0 h-full tracking-line rounded-full transition-all duration-1000 ease-out" 
+                    style={{ width: `${((statusSteps.indexOf(order.status) + 1) / statusSteps.length) * 100}%` }}
+                  ></div>
+                </div>
+                
+                <div className="flex justify-between px-1">
                   {statusSteps.map((step, i) => (
-                    <div key={step} className="flex flex-col items-center group/step">
-                      <div className={`w-4 h-4 rounded-full border-2 border-white shadow-sm z-10 transition-colors ${
-                        statusSteps.indexOf(order.status) >= i ? 'bg-emerald-500' : 'bg-slate-200'
+                    <div key={step} className="flex flex-col items-center">
+                      <div className={`w-3 h-3 rounded-full border-2 border-white shadow-sm mb-3 transition-all duration-500 ${
+                        statusSteps.indexOf(order.status) >= i ? 'bg-emerald-500 scale-125' : 'bg-slate-200'
                       }`}></div>
-                      <span className={`absolute -bottom-6 text-[8px] font-black uppercase tracking-widest transition-opacity ${
-                        order.status === step ? 'opacity-100 text-emerald-600' : 'opacity-0'
+                      <span className={`text-[8px] font-black uppercase tracking-widest transition-opacity text-center w-16 ${
+                        order.status === step ? 'opacity-100 text-emerald-600 font-bold' : 'opacity-30 text-slate-400'
                       }`}>
-                        {step}
+                        {step.split(' ').join('\n')}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="p-4 bg-slate-50 rounded-[28px] border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-xl shadow-sm"><MapPin className="w-4 h-4 text-slate-400" /></div>
+              <div className="grid grid-cols-2 gap-6 pt-6">
+                 <div className="p-6 bg-slate-50 rounded-[40px] border border-slate-100 flex items-center gap-4 group/box hover:bg-white transition-colors">
+                    <div className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center group-hover/box:rotate-12 transition-transform">
+                      <MapPin className="w-5 h-5 text-slate-400" />
+                    </div>
                     <div>
-                       <p className="text-[8px] font-black text-slate-400 uppercase">From</p>
-                       <p className="text-[10px] font-bold text-slate-700 truncate w-32">{order.pickupAddress}</p>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pickup Hub</p>
+                       <p className="text-xs font-bold text-slate-700 truncate w-32">{order.pickupAddress}</p>
                     </div>
                  </div>
-                 <div className="p-4 bg-slate-50 rounded-[28px] border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-xl shadow-sm"><Truck className="w-4 h-4 text-emerald-500" /></div>
+                 <div className="p-6 bg-slate-50 rounded-[40px] border border-slate-100 flex items-center gap-4 group/box hover:bg-white transition-colors">
+                    <div className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center group-hover/box:rotate-12 transition-transform">
+                      <Truck className="w-5 h-5 text-emerald-500" />
+                    </div>
                     <div>
-                       <p className="text-[8px] font-black text-slate-400 uppercase">Current</p>
-                       <p className="text-[10px] font-bold text-slate-700">{order.status}</p>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Logistics</p>
+                       <p className="text-xs font-bold text-slate-700">Community Fleet</p>
                     </div>
                  </div>
               </div>
 
-              <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-600 transition shadow-xl shadow-slate-200">
-                View On Map <ChevronRight className="w-4 h-4" />
-              </button>
+              <div className="flex gap-4">
+                <button className="flex-1 py-5 bg-slate-900 text-white rounded-[28px] font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-emerald-600 transition shadow-2xl active:scale-95">
+                  <Navigation className="w-5 h-5" /> View on Radar
+                </button>
+                <button className="w-16 h-16 bg-slate-50 text-slate-400 rounded-[28px] flex items-center justify-center hover:bg-slate-900 hover:text-white transition group/btn">
+                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
           </div>
         ))}
